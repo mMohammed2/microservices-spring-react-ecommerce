@@ -1,0 +1,122 @@
+.payment {
+  background: #f5f7fb;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.payment__container {
+  max-width: 900px;
+  margin: auto;
+}
+
+.payment__title {
+  margin-bottom: 20px;
+}
+
+.payment__card {
+  background: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.payment__select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+
+.payment__selectedBox {
+  margin-top: 10px;
+  padding: 10px;
+  background: #f0f7ff;
+  border-left: 4px solid #007bff;
+  border-radius: 6px;
+}
+
+.payment__item {
+  margin-bottom: 20px;
+}
+
+.payment__couponBox {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.payment__input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.payment__btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.payment__btn:hover {
+  background: #0056b3;
+}
+
+.payment__billing .payment__line {
+  display: flex;
+  justify-content: space-between;
+  margin: 8px 0;
+}
+
+.payment__total {
+  margin-top: 10px;
+}
+
+.payment__placeOrder {
+  width: 100%;
+  padding: 12px;
+  margin-top: 15px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.payment__placeOrder:hover {
+  background: #218838;
+}
+
+.payment__empty {
+  text-align: center;
+}
+
+.payment__btnSecondary {
+  margin-top: 10px;
+  padding: 10px;
+  border: none;
+  background: #ff9800;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.payment__error {
+  color: red;
+  margin-top: 10px;
+}
+.payment__loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+}
+
+.payment__title {
+  margin-bottom: 20px;
+  font-size: 28px;
+}
