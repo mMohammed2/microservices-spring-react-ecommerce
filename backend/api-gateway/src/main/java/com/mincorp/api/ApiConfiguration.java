@@ -27,8 +27,8 @@ public class ApiConfiguration {
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 		.csrf(csrf->csrf.disable())
 		.authorizeExchange(auth->
-			auth.pathMatchers("/api/auth/**","/api/products/getTopProducts").permitAll().
-			pathMatchers("/api/users/**","api/cart/**","/api/orders/**","/api/seller/validate","/api/reviews/**").hasAnyRole("USER","SELLER").
+			auth.pathMatchers("/api/auth/**","/api/products/getTopProducts","/api/reviews/get/**").permitAll().
+			pathMatchers("/api/users/**","api/cart/**","/api/orders/**","/api/seller/validate","/api/reviews/add/**","/api/reviews/update/**").hasAnyRole("USER","SELLER").
 			pathMatchers("/api/seller/**","/api/products/addProduct","/api/products/seller").hasRole("SELLER").
 			pathMatchers("/api/payments/**").permitAll()
 			

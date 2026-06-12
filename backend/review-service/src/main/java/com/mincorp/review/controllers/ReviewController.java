@@ -1,5 +1,7 @@
 package com.mincorp.review.controllers;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -61,5 +63,8 @@ public class ReviewController {
 		return ResponseEntity.ok(rdao.getReview(id,bId));
 	}
 	
-	
+	@GetMapping("/get/{id}")
+	public ResponseEntity<List<Review>> review(@PathVariable int id){
+		return ResponseEntity.ok(rdao.getReviewById(id));
+	}
 }
