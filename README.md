@@ -30,13 +30,15 @@ This project is a microservices-based e-commerce application developed using Rea
 
 ## Architecture
 
-<img width="871" height="482" alt="Ecommerce-microservices" src="https://github.com/user-attachments/assets/4dbdfe1d-569f-43f5-9e9a-f4f8cd50582c" />
+<img width="871" height="482" alt="Ecommerce-microservices" src="https://github.com/user-attachments/assets/0f89b3a2-e831-4d11-a642-d1f9386054f9" />
+
 
 ## Landing Page
-<img width="948" height="414" alt="Screenshot 2026-06-11 133621" src="https://github.com/user-attachments/assets/b6d31b4f-12d1-4a72-8394-353335b5a846" />
+<img width="948" height="414" alt="Screenshot 2026-06-11 133621" src="https://github.com/user-attachments/assets/29765543-2741-4b80-8839-f0512ecb74f3" />
 
 ## Eureka Server
-<img width="947" height="418" alt="Screenshot 2026-06-11 133525" src="https://github.com/user-attachments/assets/1e416a03-1cc4-49f1-a348-dec77bff9123" />
+<img width="947" height="418" alt="Screenshot 2026-06-11 133525" src="https://github.com/user-attachments/assets/1df3ef01-e57c-4df3-b4b4-9a96f2e143f8" />
+
 
 
 ## Microservices
