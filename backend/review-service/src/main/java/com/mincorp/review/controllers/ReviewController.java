@@ -60,6 +60,9 @@ public class ReviewController {
 		int bId = service.getClaimsBody(authHeader.substring(7)).get("id",Integer.class);
 		return ResponseEntity.ok(rdao.getReview(id,bId));
 	}
-	
+	@GetMapping("/get/{id}")
+	public ResponseEntity<List<Review>> review(@PathVariable int id){
+		return ResponseEntity.ok(rdao.getReviewById(id));
+	}
 	
 }
