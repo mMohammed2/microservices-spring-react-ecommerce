@@ -1,0 +1,14 @@
+# Eclipse
+.metadata/
+.settings/
+.classpath
+.project
+
+# Java build
+target/
+bin/
+
+# Node
+node_modules/
+dist/
+build/

@@ -1,0 +1,89 @@
+.orders {
+    padding: 20px 80px;
+}
+
+.orders h1 {
+    margin: 30px 0;
+}
+.order {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow:
+    0 6px 18px rgba(
+      0,
+      0,
+      0,
+      0.08
+    );
+}
+
+.order__actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.review {
+  background: #f59e0b;
+  color: white;
+}
+
+.return {
+  background: #2563eb;
+  color: white;
+}
+
+.review-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(
+    0,
+    0,
+    0,
+    0.5
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.review-modal {
+  background: white;
+  width: 500px;
+  max-width: 95%;
+  border-radius: 16px;
+  padding: 25px;
+}
+
+.star-rating {
+  display: flex;
+  gap: 8px;
+  margin: 15px 0;
+  font-size: 36px;
+}
+
+.star {
+  cursor: pointer;
+  color: #d1d5db;
+}
+
+.star.active {
+  color: #fbbf24;
+}
+
+.review-modal textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+.review-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}

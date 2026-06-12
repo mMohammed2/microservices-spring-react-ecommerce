@@ -1,0 +1,37 @@
+.tracking {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+.tracking__steps {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.tracking__step {
+  text-align: center;
+  flex: 1;
+  opacity: 0.4;
+}
+
+.tracking__step.active {
+  opacity: 1;
+  font-weight: bold;
+}
+
+.circle {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #ccc;
+  margin: 0 auto 5px;
+  line-height: 25px;
+}
+
+.tracking__step.active .circle {
+  background: green;
+  color: white;
+}

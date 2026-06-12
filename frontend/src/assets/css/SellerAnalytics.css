@@ -1,0 +1,55 @@
+.analytics {
+  padding: 20px;
+}
+
+.analytics h1 {
+  margin-bottom: 20px;
+}
+
+.analytics__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.card h3 {
+  font-size: 14px;
+  color: #666;
+}
+
+.card p {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 5px;
+}
+
+.highlight {
+  border: 2px solid orange;
+}
+
+.success {
+  border: 2px solid rgb(12, 215, 26);
+}
+
+.main {
+  border: 2px solid blue;
+}
+.revenue {
+  color:  rgb(0, 234, 4);
+}
+
+.tax {
+  color:  rgb(198, 38, 38);
+}
+
+.discount {
+  color: blue;
+}

@@ -1,0 +1,89 @@
+.header__line {
+  display: flex;
+  justify-content: center;
+  padding: 5px;
+  margin: 5px;
+  border: 1px solid #848688;
+  color: #000;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  padding: 10px;
+}
+
+.navbar :hover {
+  text-decoration: underline;
+}
+
+.navbar__option {
+  margin: 10px 15px 15px 12px;
+  color: #000;
+  cursor: pointer;
+}
+
+.header__line {
+    cursor: pointer;
+    margin-right: 20px;
+}
+
+.navbar__option {
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+/* Overlay */
+.menu__overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 99;
+}
+
+/* Side Menu */
+.side__menu {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 280px;
+    height: 100%;
+    background-color: white;
+    z-index: 100;
+    transition: 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+}
+
+.side__menu.active {
+    left: 0;
+}
+
+/* Header */
+.side__menuHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #232f3e;
+    color: white;
+    padding: 15px;
+}
+
+.close__icon {
+    cursor: pointer;
+}
+
+/* Menu Items */
+.side__menuItems p {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.side__menuItems p:hover {
+    background-color: #f5f5f5;
+}
