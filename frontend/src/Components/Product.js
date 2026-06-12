@@ -3,7 +3,7 @@ import "../assets/css/Product.css";
 import StarIcon from '@material-ui/icons/Star';
 import instance from '../axios';
 
-function Product({ id, title, image, price, rating, items, quantity, description, category,tax }) {
+function Product({ id, title, image, price, rating, items, quantity, description, category,tax,onClick }) {
 
 
     const [cartQty, setCartQty] = useState(0);
@@ -42,7 +42,6 @@ function Product({ id, title, image, price, rating, items, quantity, description
         );
 
         setCartQty(prev => prev + 1);
-        window.location.reload();
     };
 
     const removeFromCart = async () => {
@@ -58,7 +57,7 @@ function Product({ id, title, image, price, rating, items, quantity, description
     };
 
     return (
-        <div className="product">
+        <div className="product" onClick={onClick}>
 
             <div className="product__info">
 
@@ -78,7 +77,7 @@ function Product({ id, title, image, price, rating, items, quantity, description
                 <p>Available: {quantity}</p>
             
             </div>
-            <br></br>
+            <div style={{height:"4rem"}}></div>
             <img src={image} alt={title} />
             <div className="qtyBox">
 
