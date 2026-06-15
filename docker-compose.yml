@@ -1,0 +1,176 @@
+version: "3.8"
+
+services:
+
+  # =========================
+  # MYSQL DATABASE
+  # =========================
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: spring
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  # =========================
+  # EUREKA SERVER
+  # =========================
+  eureka-server:
+    build: ./backend/eureka-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+
+  # =========================
+  # API GATEWAY
+  # =========================
+  api-gateway:
+    build: ./backend/api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+
+  # =========================
+  # AUTH SERVICE
+  # =========================
+  auth-service:
+    build: ./backend/auth-service
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-server
+      - mysql
+    environment:
+      spring.datasource.url=jdbc:mysql://mysql:3306/spring
+      spring.datasource.username=root
+      spring.datasource.password=root
+
+  # =========================
+  # USER SERVICE
+  # =========================
+  user-service:
+    build: ./backend/user-service
+    container_name: user-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+      - mysql
+    environment:
+      spring.datasource.url=jdbc:mysql://mysql:3306/spring
+      spring.datasource.username=root
+      spring.datasource.password=root
+
+  # =========================
+  # PRODUCT SERVICE
+  # =========================
+  product-service:
+    build: ./backend/product-service
+    container_name: product-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+      - mysql
+    environment:
+      spring.datasource.url=jdbc:mysql://mysql:3306/spring
+      spring.datasource.username=root
+      spring.datasource.password=root
+
+  # =========================
+  # CART SERVICE
+  # =========================
+  cart-service:
+    build: ./backend/cart-service
+    container_name: cart-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - eureka-server
+      - mysql
+    environment:
+      spring.datasource.url=jdbc:mysql://mysql:3306/spring
+      spring.datasource.username=root
+      spring.datasource.password=root
+
+  # =========================
+  # ORDER SERVICE
+  # =========================
+  order-service:
+    build: ./backend/order-service
+    container_name: order-service
+    ports:
+      - "8087:8087"
+    depends_on:
+      - eureka-server
+      - mysql
+    environment:
+      spring.datasource.url=jdbc:mysql://mysql:3306/spring
+      spring.datasource.username=root
+      spring.datasource.password=root
+
+  # =========================
+  # PAYMENT SERVICE
+  # =========================
+  payment-service:
+    build: ./backend/payment-service
+    container_name: payment-service
+    ports:
+      - "8086:8086"
+    depends_on:
+      - eureka-server
+      - mysql
+
+  # =========================
+  # REVIEW SERVICE
+  # =========================
+  review-service:
+    build: ./backend/review-service
+    container_name: review-service
+    ports:
+      - "8088:8088"
+    depends_on:
+      - eureka-server
+      - mysql
+    environment:
+      spring.datasource.url=jdbc:mysql://mysql:3306/spring
+      spring.datasource.username=root
+      spring.datasource.password=root
+
+  # =========================
+  # SELLER SERVICE
+  # =========================
+  seller-service:
+    build: ./backend/seller-service
+    container_name: seller-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - eureka-server
+      - mysql
+    environment:
+      spring.datasource.url=jdbc:mysql://mysql:3306/spring
+      spring.datasource.username=root
+      spring.datasource.password=root
+
+  # =========================
+  # FRONTEND (REACT)
+  # =========================
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api-gateway
+
+volumes:
+  mysql-data:
