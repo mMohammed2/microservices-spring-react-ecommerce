@@ -30,13 +30,13 @@ This project is a microservices-based e-commerce application developed using Rea
 
 ## Architecture
 
-<img width="871" height="482" alt="Ecommerce-microservices" src="https://github.com/user-attachments/assets/4dbdfe1d-569f-43f5-9e9a-f4f8cd50582c" />
+<img width="871" height="482" alt="Ecommerce-microservices" src="Ecommerce-microservices.png" />
 
 ## Landing Page
-<img width="948" height="414" alt="Screenshot 2026-06-11 133621" src="https://github.com/user-attachments/assets/b6d31b4f-12d1-4a72-8394-353335b5a846" />
+<img width="948" height="414" alt="Screenshot 2026-06-11 133621" src="Landingpage.png" />
 
 ## Eureka Server
-<img width="947" height="418" alt="Screenshot 2026-06-11 133525" src="https://github.com/user-attachments/assets/1e416a03-1cc4-49f1-a348-dec77bff9123" />
+<img width="947" height="418" alt="Screenshot 2026-06-11 133525" src="Eureka-Server snap.png" />
 
 
 ## Microservices
@@ -127,10 +127,11 @@ Frontend will start on localhost:3000.
 * API Routing using Spring Cloud Gateway
 * Secure APIs using Spring Security
 * Database Integration using Hibernate/JPA
+* Usage of swagger-ui/OpenAPI for API testing
+* Docker Containerization (files).
 
 ## Future Improvements
 
-* Docker Containerization
 * Redis Caching
 * Kafka Event Streaming
 * Kubernetes Deployment
