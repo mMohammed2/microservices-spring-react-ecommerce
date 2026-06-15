@@ -38,7 +38,7 @@ function Order({
       setLoading(true);
 
       await instance.post(
-        `/orders/${order.id}/cancel`,
+        `/orders/user/cancel/${order.id}`,
         {},
         {
           headers: {

@@ -39,4 +39,10 @@ public class ProductDao {
 	public Product getProduct(int id) {
 		return repo.getById(id);
 	}
+	public List<Product> getAllProducts(){
+		return repo.findAll();
+	}
+	public List<Product> getSearchedProducts(String query){
+		return repo.findByNameContainingIgnoreCaseOrTypeContainingIgnoreCase(query, query);
+	}
 }

@@ -26,7 +26,7 @@ public class OrdersConfiguration {
 		.csrf(csrf->csrf.disable())
 		.authorizeHttpRequests(auth
 				-> 
-			auth.requestMatchers("/api/orders/create","/api/return/**").hasAnyRole("USER","SELLER")
+			auth.requestMatchers("/api/orders/create","/api/return/**","/api/orders/user/cancel/**").hasAnyRole("USER","SELLER")
 			.requestMatchers("/api/order/package/**").hasRole("SELLER")
 			.anyRequest().authenticated()	
 				)

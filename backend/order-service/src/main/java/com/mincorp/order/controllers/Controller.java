@@ -296,8 +296,8 @@ public class Controller {
 		System.out.print(status.getStatus());
 		pdao.updatePaymentStatus(id,status.getStatus());
 	}
-	@PostMapping("/{id}/cancel")
-	public void cancelOrder(@PathVariable int id,@RequestHeader(name="Authoriration") String authHeader) {
+	@PostMapping("user/cancel/{id}")
+	public void cancelOrder(@PathVariable int id,@RequestHeader(name="Authorization") String authHeader) {
 		HttpHeaders headers = new HttpHeaders();
 	    headers.set("Authorization", authHeader);
 	    headers.setContentType(MediaType.APPLICATION_JSON);

@@ -21,7 +21,7 @@ public class ProductConfig {
 		http.cors(cors -> {})
 		.csrf(csrf->csrf.disable())
 		.authorizeHttpRequests(auth-> 
-		auth.requestMatchers("/api/products/getTopProducts").permitAll()
+		auth.requestMatchers("/api/products/getTopProducts","/api/products/search","/api/products/all").permitAll()
 		.requestMatchers("/api/products/getCart","/api/products/getPrice","/api/products/getProduct/**","/api/products/update","/api/products/return/**").hasAnyRole("USER","SELLER")
 		.requestMatchers("/api/products/seller","/api/products/addProduct","/api/products/getSellerProduct/**").hasRole("SELLER")
 		.anyRequest().authenticated())

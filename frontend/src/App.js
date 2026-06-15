@@ -13,6 +13,8 @@ import User from './Components/User';
 import SellerRegister from './Components/SellerRegister';
 import SellerCentral from './Components/SellerCentral';
 import SecurePayment from './Components/SecurePayments';
+import ProductDetail from './Components/ProductDetail';
+import Products from './Components/Products';
 
 
 function App() {
@@ -51,6 +53,10 @@ function App() {
             <User />
             <Footer />
           </Route>
+
+          <Route path="/product/:id" component={ProductDetail} />
+          <Route path="/products" component={Products} />
+          
           <Route path="/sentral">
             <SellerCentral />
           </Route>

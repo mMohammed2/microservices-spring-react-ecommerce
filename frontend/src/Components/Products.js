@@ -31,9 +31,9 @@ function useQuery() {
 
 const Products = () => {
   const query = useQuery();
-  const search = query.get("search");
+  const searchParam = query.get("search") || "";
   const history = useHistory();
-
+  const categoryParam = query.get("category");
   const [allProducts, setAllProducts] = useState([]);
   const [displayProducts, setDisplayProducts] = useState([]);
 
@@ -44,6 +44,8 @@ const Products = () => {
     maxPrice: "",
     minRating: "",
   });
+
+  const [sortBy, setSortBy] = useState("");
 
   // -----------------------------
   // COMBINE PRODUCTS
@@ -82,109 +84,143 @@ const Products = () => {
   };
 
   // -----------------------------
-  // FILTER METHODS
+  // CATEGORY FILTER (CLIENT SIDE)
   // -----------------------------
-  const filterByPrice = (data) => {
-    return data.filter((p) => {
-      const minOk =
-        !filters.minPrice || p.price >= Number(filters.minPrice);
-      const maxOk =
-        !filters.maxPrice || p.price <= Number(filters.maxPrice);
+  const applyCategory = (data) => {
+    if (selectedCategory === "All") return data;
 
-      return minOk && maxOk;
+    return data.filter(
+      (p) => (p.category || p.type) === selectedCategory
+    );
+  };
+
+  // -----------------------------
+  // SEARCH FILTER (CLIENT SIDE)
+  // -----------------------------
+  const applySearch = (data) => {
+    if (!searchParam) return data;
+
+    return data.filter((p) => {
+      const name = (p.name || "").toLowerCase();
+      const type = (p.type || "").toLowerCase();
+      const q = searchParam.toLowerCase();
+
+      return name.includes(q) || type.includes(q);
     });
   };
 
-  const filterByRating = (data) => {
+  // -----------------------------
+  // PRICE + RATING FILTERS
+  // -----------------------------
+  const applyFilters = (data) => {
     return data.filter((p) => {
+      const minOk =
+        !filters.minPrice || p.price >= Number(filters.minPrice);
+
+      const maxOk =
+        !filters.maxPrice || p.price <= Number(filters.maxPrice);
+
       const rating =
         p.totalReviews > 0
           ? Math.round(p.totalRating / p.totalReviews)
           : 0;
 
-      return (
-        !filters.minRating || rating >= Number(filters.minRating)
-      );
+      const ratingOk =
+        !filters.minRating || rating >= Number(filters.minRating);
+
+      return minOk && maxOk && ratingOk;
     });
   };
 
-  const applyAllFilters = (data) => {
-    let result = [...data];
-    result = filterByPrice(result);
-    result = filterByRating(result);
-    return result;
+  // -----------------------------
+  // SORT
+  // -----------------------------
+  const applySort = (data) => {
+    let sorted = [...data];
+
+    switch (sortBy) {
+      case "price_low":
+        sorted.sort((a, b) => a.price - b.price);
+        break;
+
+      case "price_high":
+        sorted.sort((a, b) => b.price - a.price);
+        break;
+
+      case "rating_high":
+        sorted.sort(
+          (a, b) =>
+            (b.totalRating || 0) / (b.totalReviews || 1) -
+            (a.totalRating || 0) / (a.totalReviews || 1)
+        );
+        break;
+
+      case "popular":
+        sorted.sort(
+          (a, b) => (b.totalSold || 0) - (a.totalSold || 0)
+        );
+        break;
+
+      default:
+        break;
+    }
+
+    return sorted;
   };
 
   // -----------------------------
-  // UPDATE PRODUCTS
-  // -----------------------------
-  const updateProducts = (data) => {
-    const combined = combineProducts(data);
-
-    setAllProducts(combined);
-    setDisplayProducts(combined);
-  };
-
-  // -----------------------------
-  // AUTO FILTER (NO BUTTONS)
+  // PIPELINE ENGINE
   // -----------------------------
   useEffect(() => {
-    const filtered = applyAllFilters(allProducts);
-    setDisplayProducts(filtered);
-  }, [filters, allProducts]);
+    let result = [...allProducts];
 
-  // -----------------------------
-  // FETCH
-  // -----------------------------
-  const fetchSearchProducts = async () => {
-    try {
-      const res = await instance.get(
-        `/products/search?query=${encodeURIComponent(search)}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+    result = applyCategory(result);
+    result = applySearch(result);
+    result = applyFilters(result);
+    result = applySort(result);
 
-      updateProducts(res.data || []);
-    } catch (err) {
-      console.log(err);
+    setDisplayProducts(result);
+  }, [allProducts, selectedCategory, filters, sortBy, searchParam]);
+  useEffect(() => {
+    if (categoryParam) {
+      setSelectedCategory(categoryParam);
+    } else {
+      setSelectedCategory("All");
     }
-  };
-
-  const fetchCategoryProducts = async (category) => {
+  }, [categoryParam]);
+  
+  // -----------------------------
+  // FETCH ONLY ONCE
+  // -----------------------------
+  const fetchProducts = async () => {
     try {
-      const url =
-        category === "All"
-          ? "/products/all"
-          : `/products/category/${category}`;
-
-      const res = await instance.get(url, {
+      const res = await instance.get("/products/all", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
 
-      updateProducts(res.data || []);
+      const combined = combineProducts(res.data || []);
+      setAllProducts(combined);
     } catch (err) {
       console.log(err);
     }
   };
 
   useEffect(() => {
-    if (search) {
-      fetchSearchProducts();
-    } else {
-      fetchCategoryProducts("All");
-    }
-  }, [search]);
+    fetchProducts();
+  }, []);
 
+  // -----------------------------
+  // CATEGORY CLICK
+  // -----------------------------
   const handleCategoryClick = (cat) => {
-    setSelectedCategory(cat);
-    fetchCategoryProducts(cat);
+    history.push(`/products?category=${encodeURIComponent(cat)}`);
   };
 
+  // -----------------------------
+  // UI
+  // -----------------------------
   return (
     <div className="productsPage">
 
@@ -210,7 +246,7 @@ const Products = () => {
         ))}
       </div>
 
-      {/* CENTER PRODUCTS */}
+      {/* PRODUCTS */}
       <div className="productsGrid">
         {displayProducts.length === 0 ? (
           <h2>No Products Found</h2>
@@ -218,9 +254,9 @@ const Products = () => {
           displayProducts.map((p) => (
             <>
             <Product
-              key={p._id || p.id}
-              id={p._id || p.id}
-              title={p.name || p.title}
+              key={p.id}
+              id={p.id}
+              title={p.name}
               image={p.images}
               price={p.price}
               rating={
@@ -239,20 +275,33 @@ const Products = () => {
                   state: { product: p },
                 })
               }
-            /><br/></>
+            />
+            <br/></>
           ))
         )}
       </div>
 
       {/* RIGHT FILTERS */}
       <div className="filtersSidebar">
+
+        <h3>Sort By</h3>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value)}
+        >
+          <option value="">Default</option>
+          <option value="price_low">Price: Low → High</option>
+          <option value="price_high">Price: High → Low</option>
+          <option value="rating_high">Rating: High → Low</option>
+          <option value="popular">Popularity</option>
+        </select>
+
         <h3>Filters</h3>
 
         <div className="filterGroup">
           <label>Min Price</label>
           <input
             type="number"
-            value={filters.minPrice}
             onChange={(e) =>
               setFilters({ ...filters, minPrice: e.target.value })
             }
@@ -263,7 +312,6 @@ const Products = () => {
           <label>Max Price</label>
           <input
             type="number"
-            value={filters.maxPrice}
             onChange={(e) =>
               setFilters({ ...filters, maxPrice: e.target.value })
             }
@@ -273,7 +321,6 @@ const Products = () => {
         <div className="filterGroup">
           <label>Min Rating</label>
           <select
-            value={filters.minRating}
             onChange={(e) =>
               setFilters({ ...filters, minRating: e.target.value })
             }
@@ -285,8 +332,8 @@ const Products = () => {
             <option value="4">4+</option>
           </select>
         </div>
-      </div>
 
+      </div>
     </div>
   );
 };

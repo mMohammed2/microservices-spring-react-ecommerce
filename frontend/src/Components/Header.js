@@ -4,10 +4,19 @@ import SearchIcon from "@material-ui/icons/Search";
 import ShoppingCartOutlinedIcon from '@material-ui/icons/ShoppingCartOutlined';
 import { Link } from 'react-router-dom';
 import instance from '../axios';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom';
 
 function Header() {
-
+    const [search, setSearch] = useState("");
+    const history = useHistory();
     const [cartCount, setCartCount] = useState(0);
+    const handleSearch = (e) => {
+        if (e.key === "Enter" || e.type === "click") {
+            if (!search.trim()) return;
+
+            history.push(`/products?search=${encodeURIComponent(search)}`);
+        }
+        };
     useEffect(() => {
         const getCartCount = async () => {
 
@@ -54,12 +63,21 @@ function Header() {
             </div>
 
             <div className="header__search">
-                <input className="header__searchInput" type="text" />
+                <input
+                    className="header__searchInput"
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onKeyDown={handleSearch}
+                    placeholder="Search products..."
+                />
+
                 <SearchIcon
                     className="header__searchIcon"
-                    style={{ color: '#2874f0' }}
+                    style={{ color: "#2874f0", cursor: "pointer" }}
+                    onClick={handleSearch}
                 />
-            </div>
+                </div>
 
             <div className="header__nav">
 

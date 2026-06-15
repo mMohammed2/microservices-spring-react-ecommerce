@@ -24,7 +24,8 @@ public class Configuration {
 		http.cors(cors->{})
 		.csrf(csrf->csrf.disable())
 		.authorizeHttpRequests(auth->
-		auth.requestMatchers("/api/reviews/**").hasAnyRole("USER","SELLER")
+		auth.requestMatchers("/api/revies/get/**").permitAll()
+		.requestMatchers("/api/reviews/add","/api/reviews/get/**").hasAnyRole("USER","SELLER")
 		.anyRequest().authenticated()
 		).addFilterAfter(filter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();

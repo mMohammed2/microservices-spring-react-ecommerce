@@ -9,6 +9,12 @@ function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const history =  useHistory();
     const isSeller = localStorage.getItem("portiire") === "kdhfjdhjghfdk";
+    const categories = [
+        "Mobile Phone",
+        "Laptops",
+        "Clothing",
+        "Toys"
+        ];
     return (
         <>
             <div className="navbar">
@@ -21,29 +27,18 @@ function Navbar() {
                     <DehazeOutlinedIcon />
                 </p>
 
-                <div className="navbar__option">
-                    <span>Gift Cards</span>
+                {categories.map((cat) => (
+                <div
+                    key={cat}
+                    className="navbar__option"
+                    onClick={() => {
+                    history.push(`/products?category=${encodeURIComponent(cat)}`);
+                    setMenuOpen(false);
+                    }}
+                >
+                    <span>{cat}</span>
                 </div>
-
-                <div className="navbar__option">
-                    <span>Best Sellers</span>
-                </div>
-
-                <div className="navbar__option">
-                    <span>Mobiles</span>
-                </div>
-
-                <div className="navbar__option">
-                    <span>Today's Deals</span>
-                </div>
-
-                <div className="navbar__option">
-                    <span>Prime</span>
-                </div>
-
-                <div className="navbar__option">
-                    <span>New Releases</span>
-                </div>
+                ))}
             </div>
 
             {/* Overlay */}

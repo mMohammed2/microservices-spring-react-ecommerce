@@ -121,4 +121,12 @@ public class ProductController {
 		prdao.addProduct(p);
 		return ResponseEntity.ok(true);
 	}
+	@GetMapping("/search")
+	public ResponseEntity<List<Product>> search(@RequestParam String query){
+		return ResponseEntity.ok(prdao.getSearchedProducts(query));
+	}
+	@GetMapping("/all")
+	public ResponseEntity<List<Product>> all(){
+		return ResponseEntity.ok(prdao.getAllProducts());
+	}
 }
