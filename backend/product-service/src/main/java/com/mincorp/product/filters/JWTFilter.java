@@ -32,7 +32,7 @@ public class JWTFilter extends OncePerRequestFilter{
 		}
 		
 		String token = auth.substring(7);
-		if(!jwtService.isValid(token)) {
+		if(token.isEmpty() || token.equals("null") || token.equals("undefined") || !jwtService.isValid(token)) {
 			filterChain.doFilter(request, response);
 			return;
 		}

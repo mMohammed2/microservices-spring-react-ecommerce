@@ -129,10 +129,9 @@ Frontend will start on localhost:3000.
 * Database Integration using Hibernate/JPA
 * Usage of swagger-ui/OpenAPI for API testing
 * Docker Containerization (files).
+* Redis Caching to prevent successive database hits
 
 ## Future Improvements
-
-* Redis Caching
 * Kafka Event Streaming
 * Kubernetes Deployment
 * CI/CD using GitHub Actions

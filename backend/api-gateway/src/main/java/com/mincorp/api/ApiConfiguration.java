@@ -27,12 +27,10 @@ public class ApiConfiguration {
 		http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 		.csrf(csrf->csrf.disable())
 		.authorizeExchange(auth->
-			auth.pathMatchers("/api/auth/**","/api/products/getTopProducts","/api/reviews/get/**").permitAll().
+			auth.pathMatchers("/api/auth/**","/api/products/getTopProducts","/api/reviews/get/**","/api/payments/**","/api/cache/**","/api/products/all").permitAll().
 			pathMatchers("/api/users/**","api/cart/**","/api/orders/**","/api/seller/validate","/api/reviews/add/**","/api/reviews/update/**").hasAnyRole("USER","SELLER").
-			pathMatchers("/api/seller/**","/api/products/addProduct","/api/products/seller").hasRole("SELLER").
-			pathMatchers("/api/payments/**").permitAll()
-			
-			.anyExchange().authenticated()
+			pathMatchers("/api/seller/**","/api/products/addProduct","/api/products/seller").hasRole("SELLER").			
+			anyExchange().authenticated()
 		).addFilterAt(jwtFilter,SecurityWebFiltersOrder.AUTHENTICATION);
 		;
 		return http.build();
@@ -64,6 +62,9 @@ public class ApiConfiguration {
 	                .route("review-service",r-> r
 	                		.path("/api/reviews/**")
 	                		.uri("lb://REVIEW-SERVICE"))
+	                .route("cache-service",r-> r
+	                		.path("/api/cache/**")
+	                		.uri("lb://CACHE-SERVICE"))
 	                .build();
 	    }
 	 
