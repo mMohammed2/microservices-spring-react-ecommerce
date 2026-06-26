@@ -130,28 +130,41 @@ public class ProductController {
 	}
 	@GetMapping("/all")
 	public ResponseEntity<List<CachedProduct>> all() {
-	    ResponseEntity<List<CachedProduct>> response = restTemplate.exchange(
-	        "http://CACHE-SERVICE/api/cache/products/get",
-	        HttpMethod.GET,
-	        null,
-	        new ParameterizedTypeReference<List<CachedProduct>>() {}
-	    );
-	    List<CachedProduct> products = response.getBody();
+		List<CachedProduct> products;
+		try {
+			ResponseEntity<List<CachedProduct>> response = restTemplate.exchange(
+					"http://CACHE-SERVICE/api/cache/products/get",
+					HttpMethod.GET,
+					null,
+					new ParameterizedTypeReference<List<CachedProduct>>() {}
+					);
+			products = response.getBody();
 
-	    if (products != null && !products.isEmpty()) {
-	        return ResponseEntity.ok(products);
-	    }
+			if (products != null && !products.isEmpty()) {
+				return ResponseEntity.ok(products);
+			}
 	    
-	    products = prdao.getAllProducts().stream()
-	        .map(x -> new CachedProduct(
-	            x.getName(), x.getPrice(), x.getTotalRating(), 
-	            x.getTotalSold(), x.getDescription(), x.getImages(), 
-	            x.getTotalReviews(), x.getType(), x.getQuantity(), 
-	            x.getSellerId(), x.getTax()
-	        ))
-	        .toList();
+			products = prdao.getAllProducts().stream()
+					.map(x -> new CachedProduct(
+							x.getName(), x.getPrice(), x.getTotalRating(), 
+							x.getTotalSold(), x.getDescription(), x.getImages(), 
+							x.getTotalReviews(), x.getType(), x.getQuantity(), 
+							x.getSellerId(), x.getTax()
+							))
+					.toList();
 
-	    restTemplate.postForObject("http://CACHE-SERVICE/api/cache/products/save", products, String.class);
+			restTemplate.postForObject("http://CACHE-SERVICE/api/cache/products/save", products, String.class);
+		}catch(Exception e) {	    
+			products = prdao.getAllProducts().stream()
+					.map(x -> new CachedProduct(
+							x.getName(), x.getPrice(), x.getTotalRating(), 
+							x.getTotalSold(), x.getDescription(), x.getImages(), 
+							x.getTotalReviews(), x.getType(), x.getQuantity(), 
+							x.getSellerId(), x.getTax()
+							))
+					.toList();
+
+		}
 	    
 	    return ResponseEntity.ok(products);
 	}

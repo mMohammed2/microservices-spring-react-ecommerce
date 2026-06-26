@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import instance from "../axios";
 import Product from "./Product";
 import "../assets/css/Products.css";
+import Fuse from "fuse.js";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 const PRODUCT_CATEGORIES = [
@@ -25,18 +26,12 @@ const PRODUCT_CATEGORIES = [
   "Automotive",
 ];
 
-function useQuery() {
-  return new URLSearchParams(useLocation().search);
-}
-
 const Products = () => {
-  const query = useQuery();
-  const searchParam = query.get("search") || "";
+  const location = useLocation();
   const history = useHistory();
-  const categoryParam = query.get("category");
+
   const [allProducts, setAllProducts] = useState([]);
   const [displayProducts, setDisplayProducts] = useState([]);
-
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const [filters, setFilters] = useState({
@@ -47,6 +42,12 @@ const Products = () => {
 
   const [sortBy, setSortBy] = useState("");
 
+  // ✅ SAFE SEARCH PARAM
+  const searchParam = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get("search") || "";
+  }, [location.search]);
+
   // -----------------------------
   // COMBINE PRODUCTS
   // -----------------------------
@@ -54,9 +55,7 @@ const Products = () => {
     const grouped = {};
 
     data.forEach((product) => {
-      const key = `${(product.name || product.title)?.toLowerCase()}-${
-        product.category || product.type
-      }`;
+      const key = `${(product.name || "").toLowerCase()}-${product.category}`;
 
       if (!grouped[key]) {
         grouped[key] = {
@@ -65,18 +64,6 @@ const Products = () => {
         };
       } else {
         grouped[key].variants.push(product);
-
-        grouped[key].quantity =
-          (grouped[key].quantity || 0) + (product.quantity || 0);
-
-        grouped[key].totalSold =
-          (grouped[key].totalSold || 0) + (product.totalSold || 0);
-
-        grouped[key].totalReviews =
-          (grouped[key].totalReviews || 0) + (product.totalReviews || 0);
-
-        grouped[key].totalRating =
-          (grouped[key].totalRating || 0) + (product.totalRating || 0);
       }
     });
 
@@ -84,113 +71,7 @@ const Products = () => {
   };
 
   // -----------------------------
-  // CATEGORY FILTER (CLIENT SIDE)
-  // -----------------------------
-  const applyCategory = (data) => {
-    if (selectedCategory === "All") return data;
-
-    return data.filter(
-      (p) => (p.category || p.type) === selectedCategory
-    );
-  };
-
-  // -----------------------------
-  // SEARCH FILTER (CLIENT SIDE)
-  // -----------------------------
-  const applySearch = (data) => {
-    if (!searchParam) return data;
-
-    return data.filter((p) => {
-      const name = (p.name || "").toLowerCase();
-      const type = (p.type || "").toLowerCase();
-      const q = searchParam.toLowerCase();
-
-      return name.includes(q) || type.includes(q);
-    });
-  };
-
-  // -----------------------------
-  // PRICE + RATING FILTERS
-  // -----------------------------
-  const applyFilters = (data) => {
-    return data.filter((p) => {
-      const minOk =
-        !filters.minPrice || p.price >= Number(filters.minPrice);
-
-      const maxOk =
-        !filters.maxPrice || p.price <= Number(filters.maxPrice);
-
-      const rating =
-        p.totalReviews > 0
-          ? Math.round(p.totalRating / p.totalReviews)
-          : 0;
-
-      const ratingOk =
-        !filters.minRating || rating >= Number(filters.minRating);
-
-      return minOk && maxOk && ratingOk;
-    });
-  };
-
-  // -----------------------------
-  // SORT
-  // -----------------------------
-  const applySort = (data) => {
-    let sorted = [...data];
-
-    switch (sortBy) {
-      case "price_low":
-        sorted.sort((a, b) => a.price - b.price);
-        break;
-
-      case "price_high":
-        sorted.sort((a, b) => b.price - a.price);
-        break;
-
-      case "rating_high":
-        sorted.sort(
-          (a, b) =>
-            (b.totalRating || 0) / (b.totalReviews || 1) -
-            (a.totalRating || 0) / (a.totalReviews || 1)
-        );
-        break;
-
-      case "popular":
-        sorted.sort(
-          (a, b) => (b.totalSold || 0) - (a.totalSold || 0)
-        );
-        break;
-
-      default:
-        break;
-    }
-
-    return sorted;
-  };
-
-  // -----------------------------
-  // PIPELINE ENGINE
-  // -----------------------------
-  useEffect(() => {
-    let result = [...allProducts];
-
-    result = applyCategory(result);
-    result = applySearch(result);
-    result = applyFilters(result);
-    result = applySort(result);
-
-    setDisplayProducts(result);
-  }, [allProducts, selectedCategory, filters, sortBy, searchParam]);
-  useEffect(() => {
-    if (categoryParam) {
-      setSelectedCategory(categoryParam);
-    } else {
-      setSelectedCategory("All");
-    }
-  }, [categoryParam]);
-  
-  // -----------------------------
-  // FETCH ONLY ONCE
+  // FETCH PRODUCTS
   // -----------------------------
   const fetchProducts = async () => {
     try {
@@ -212,6 +93,107 @@ const Products = () => {
   }, []);
 
   // -----------------------------
+  // FUSE INDEX
+  // -----------------------------
+  const fuse = useMemo(() => {
+    if (!allProducts.length) return null;
+
+    return new Fuse(allProducts, {
+    keys: [
+      { name: "name", weight: 1 },
+      { name: "category", weight: 0.2 },
+    ],
+      threshold: 0.6,
+      ignoreLocation: true,
+      findAllMatches: true,
+      useExtendedSearch: true,
+    });
+  }, [allProducts]);
+
+  // -----------------------------
+  // FILTERS
+  // -----------------------------
+  const applyCategory = (data) => {
+    if (selectedCategory === "All") return data;
+    return data.filter((p) => p.category === selectedCategory);
+  };
+
+  const applySearch = (data) => {
+    if (!searchParam.trim() || !fuse) return data;
+
+    const query = String(searchParam).trim();
+
+    const results = fuse.search(query);
+
+    return results
+      .sort((a, b) => a.score - b.score)
+      .slice(0, 20)
+      .map(r => r.item);
+  };
+
+  const applyFilters = (data) => {
+    return data.filter((p) => {
+      const minOk = !filters.minPrice || p.price >= Number(filters.minPrice);
+      const maxOk = !filters.maxPrice || p.price <= Number(filters.maxPrice);
+
+      const rating =
+        p.totalReviews > 0
+          ? Math.round(p.totalRating / p.totalReviews)
+          : 0;
+
+      const ratingOk =
+        !filters.minRating || rating >= Number(filters.minRating);
+
+      return minOk && maxOk && ratingOk;
+    });
+  };
+
+  const applySort = (data) => {
+    let sorted = [...data];
+
+    switch (sortBy) {
+      case "price_low":
+        sorted.sort((a, b) => a.price - b.price);
+        break;
+
+      case "price_high":
+        sorted.sort((a, b) => b.price - a.price);
+        break;
+
+      case "rating_high":
+        sorted.sort(
+          (a, b) =>
+            (b.totalRating || 0) / (b.totalReviews || 1) -
+            (a.totalRating || 0) / (a.totalReviews || 1)
+        );
+        break;
+
+      case "popular":
+        sorted.sort((a, b) => (b.totalSold || 0) - (a.totalSold || 0));
+        break;
+
+      default:
+        break;
+    }
+
+    return sorted;
+  };
+
+  // -----------------------------
+  // PIPELINE
+  // -----------------------------
+  useEffect(() => {
+    let result = [...allProducts];
+
+    result = applyCategory(result);
+    result = applySearch(result);
+    result = applyFilters(result);
+    result = applySort(result);
+
+    setDisplayProducts(result);
+  }, [allProducts, selectedCategory, filters, sortBy, searchParam]);
+
+  // -----------------------------
   // CATEGORY CLICK
   // -----------------------------
   const handleCategoryClick = (cat) => {
@@ -224,7 +206,7 @@ const Products = () => {
   return (
     <div className="productsPage">
 
-      {/* LEFT SIDEBAR */}
+      {/* LEFT */}
       <div className="sidebar">
         <h3>Categories</h3>
 
@@ -252,7 +234,6 @@ const Products = () => {
           <h2>No Products Found</h2>
         ) : (
           displayProducts.map((p) => (
-            <>
             <Product
               key={p.id}
               id={p.id}
@@ -267,7 +248,7 @@ const Products = () => {
               items={p.totalSold}
               quantity={p.quantity}
               description={p.description}
-              category={p.category || p.type}
+              category={p.category}
               tax={p.tax}
               onClick={() =>
                 history.push({
@@ -276,19 +257,15 @@ const Products = () => {
                 })
               }
             />
-            <br/></>
           ))
         )}
       </div>
 
       {/* RIGHT FILTERS */}
       <div className="filtersSidebar">
-
         <h3>Sort By</h3>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-        >
+
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="">Default</option>
           <option value="price_low">Price: Low → High</option>
           <option value="price_high">Price: High → Low</option>
@@ -298,41 +275,33 @@ const Products = () => {
 
         <h3>Filters</h3>
 
-        <div className="filterGroup">
-          <label>Min Price</label>
-          <input
-            type="number"
-            onChange={(e) =>
-              setFilters({ ...filters, minPrice: e.target.value })
-            }
-          />
-        </div>
+        <input
+          type="number"
+          placeholder="Min Price"
+          onChange={(e) =>
+            setFilters({ ...filters, minPrice: e.target.value })
+          }
+        />
 
-        <div className="filterGroup">
-          <label>Max Price</label>
-          <input
-            type="number"
-            onChange={(e) =>
-              setFilters({ ...filters, maxPrice: e.target.value })
-            }
-          />
-        </div>
+        <input
+          type="number"
+          placeholder="Max Price"
+          onChange={(e) =>
+            setFilters({ ...filters, maxPrice: e.target.value })
+          }
+        />
 
-        <div className="filterGroup">
-          <label>Min Rating</label>
-          <select
-            onChange={(e) =>
-              setFilters({ ...filters, minRating: e.target.value })
-            }
-          >
-            <option value="">Any</option>
-            <option value="1">1+</option>
-            <option value="2">2+</option>
-            <option value="3">3+</option>
-            <option value="4">4+</option>
-          </select>
-        </div>
-
+        <select
+          onChange={(e) =>
+            setFilters({ ...filters, minRating: e.target.value })
+          }
+        >
+          <option value="">Min Rating</option>
+          <option value="1">1+</option>
+          <option value="2">2+</option>
+          <option value="3">3+</option>
+          <option value="4">4+</option>
+        </select>
       </div>
     </div>
   );
